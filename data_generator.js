@@ -4,13 +4,17 @@
  */
 
 // set up data structures
+
 window.streams = {};
+// array of all tweets from all users I'm following
 streams.home = [];
 streams.users = {};
 streams.users.shawndrost = [];
 streams.users.sharksforcheap = [];
 streams.users.mracus = [];
 streams.users.douglascalhoun = [];
+
+// array of strings -- all the usernames I'm following
 window.users = Object.keys(streams.users);
 
 // utility function for adding tweets to our data structures

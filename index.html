@@ -1,27 +1,74 @@
+<!--
+You'll mostly be working in the javascript block of index.html. Note: The generated tweets will be displayed in reverse chronological order.
+
+BARE MINIMUM REQS:
+
+Show the user new tweets somehow.
+(You can show them automatically as they're created, or create a button that displays new tweets.)
+
+Display the timestamps of when the tweets were created.
+This timestamp should reflect the actual time the tweets were created, and should not just be hardcoded.
+
+Design your interface so that you want to look at and use the product you're making.
+
+Allow the user to click on a username to see that user's timeline.
+
+ADVANCED:
+
+Show when the tweets were created in a human-friendly way (eg "10 minutes ago").
+You'll want to find and use a library for this.
+
+Allow the user to tweet.
+(This is going to require you to understand a little more about data_generator.js,
+but you shouldn't need to modify anything.)
+-->
+
 <!DOCTYPE html>
 <html>
   <head>
+  <!--   <link type="text/css" rel="stylesheet" href="twittler_stylesheet.css"/> -->
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <title>Twittler</title>
   </head>
   <body>
+    <div class = "header">
+      <h1> Twittler </h1>
+      <img src="http://www.binkd.com/wp-content/uploads/2013/04/Twitter-engagement-Image.jpg" height="100" width="100"/>
+    </div>
+      <p id='nmbrTweet'>0 tweets received</p>
+      <button>Display new tweets</button>
+      <div id='lastTweet'></div>
     <script>
 
       $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
+    // add button above script tag
+    // access streams into an array
+    // add event on the button to prepend (most recent tweets first)
+      // Display the timestamps of when the tweets were created.
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
-        }
+        var indexLastTweetDisplayed = 0;
 
+        $('button').on('click', function() {
+          $('#nmbrTweet').text(`${streams.home.length} tweetls received`);
+          // same as:
+          // $('#nmbrTweet').text(streams.home.length + ' tweetls received');
+          var lastIndex = streams.home.length-1;
+          while(indexLastTweetDisplayed <= lastIndex) {
+
+            var tweet = streams.home[indexLastTweetDisplayed];
+            var $tweet = $('<div></div>');
+            var tweetDate = tweet.created_at.toDateString() + ' ' + tweet.created_at.toLocaleTimeString();
+            $tweet.text(tweetDate + ' @' + tweet.user + ': ' + tweet.message);
+            $tweet.prependTo('#lastTweet');
+            indexLastTweetDisplayed++;
+          }
+        });
       });
-
     </script>
+
+
   </body>
 </html>
+
+
