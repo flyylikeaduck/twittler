@@ -26,10 +26,11 @@ but you shouldn't need to modify anything.)
 <!DOCTYPE html>
 <html>
   <head>
-  <!--   <link type="text/css" rel="stylesheet" href="twittler_stylesheet.css"/> -->
+    <link type="text/css" rel="stylesheet" href="stylesheet.css"/>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
     <title>Twittler</title>
+    <link rel="icon" href="http://www.binkd.com/wp-content/uploads/2013/04/Twitter-engagement-Image.jpg">
   </head>
   <body>
     <div class = "header">
@@ -37,37 +38,39 @@ but you shouldn't need to modify anything.)
       <img src="http://www.binkd.com/wp-content/uploads/2013/04/Twitter-engagement-Image.jpg" height="100" width="100"/>
     </div>
       <p id='nmbrTweet'>0 tweets received</p>
-      <button>Display new tweets</button>
       <div id='lastTweet'></div>
     <script>
 
+
       $(document).ready(function(){
-    // add button above script tag
-    // access streams into an array
-    // add event on the button to prepend (most recent tweets first)
-      // Display the timestamps of when the tweets were created.
+        // automatically show tweets as they're created
+        // instead of button, use while loop to refresh the tweets automatically
 
         var indexLastTweetDisplayed = 0;
-
-        $('button').on('click', function() {
-          $('#nmbrTweet').text(`${streams.home.length} tweetls received`);
-          // same as:
-          // $('#nmbrTweet').text(streams.home.length + ' tweetls received');
+        // instead of button, use recursive function
+        // to refresh the tweets automatically every second
+        var displayNewTweet = function() {
+          $('#nmbrTweet').text(`${streams.home.length} tweets received`);
           var lastIndex = streams.home.length-1;
           while(indexLastTweetDisplayed <= lastIndex) {
-
             var tweet = streams.home[indexLastTweetDisplayed];
-            var $tweet = $('<div></div>');
+            var $tweet = $('<div class="tweet"></div>');
             var tweetDate = tweet.created_at.toDateString() + ' ' + tweet.created_at.toLocaleTimeString();
-            $tweet.text(tweetDate + ' @' + tweet.user + ': ' + tweet.message);
+            var tweetUser = '<a href="javascript:window.location.href=window.location.href" class="userName link">' + '@' + tweet.user + '</a>';
+
+            $tweet.append(tweetDate + ' ' + '<b>' + tweetUser + '</b>: ' + tweet.message);
             $tweet.prependTo('#lastTweet');
             indexLastTweetDisplayed++;
           }
-        });
-      });
+        };
+        var refreshUI = function(){
+          displayNewTweet();
+          setTimeout(refreshUI, 3000);
+        };
+        refreshUI();
+      })
+
     </script>
-
-
   </body>
 </html>
 
