@@ -43,33 +43,58 @@ but you shouldn't need to modify anything.)
 
 
       $(document).ready(function(){
-        // automatically show tweets as they're created
-        // instead of button, use while loop to refresh the tweets automatically
 
-        var indexLastTweetDisplayed = 0;
-        // instead of button, use recursive function
-        // to refresh the tweets automatically every second
+        var index = 0;
+        userNameClicked = false;
+
         var displayNewTweet = function() {
           $('#nmbrTweet').text(`${streams.home.length} tweets received`);
           var lastIndex = streams.home.length-1;
-          while(indexLastTweetDisplayed <= lastIndex) {
-            var tweet = streams.home[indexLastTweetDisplayed];
+
+        // instead of button, use while loop to refresh the tweets automatically
+
+          while(index <= lastIndex) {
+            var tweet = streams.home[index];
             var $tweet = $('<div class="tweet"></div>');
             var tweetDate = tweet.created_at.toDateString() + ' ' + tweet.created_at.toLocaleTimeString();
-            var tweetUser = '<a href="javascript:window.location.href=window.location.href" class="userName link">' + '@' + tweet.user + '</a>';
+            var tweetUser = '<span class="userName link">' + tweet.user + '</span>';
 
-            $tweet.append(tweetDate + ' ' + '<b>' + tweetUser + '</b>: ' + tweet.message);
+            $tweet.append(tweetDate + ' ' + '<b>@' + tweetUser + '</b>: ' + tweet.message);
             $tweet.prependTo('#lastTweet');
-            indexLastTweetDisplayed++;
+            index++;
           }
-        };
+
+            // Allow the user to click on a username to see that user's timeline.
+
+            $('.userName').on('click', function() {
+              // userNameClicked = true;
+              //var $name = $(event.target).text();
+              var $user = $(this).text();
+              var i = 0;
+              while (i <= streams.users[$user].length) {
+                $('.tweet').remove();
+                streams.users[$user].forEach(function(tweet) {
+                  var $tweet = $('<div class="tweet"></div>');
+                  var tweetDate = tweet.created_at.toDateString() + ' ' + tweet.created_at.toLocaleTimeString();
+                  var tweetUser = '<span class="userName link">' + $user + '</span>';
+                  $tweet.append(tweetDate + ' ' + '<b>@' + tweetUser + '</b>: ' + tweet.message);
+                  $tweet.prependTo('#lastTweet');
+                  i++;
+                });
+              }
+            });
+
+        }; // displayNewTweet closing bracket
+
+       // setTimeout(displayNewTweet, 3000);
+
         var refreshUI = function(){
           displayNewTweet();
           setTimeout(refreshUI, 3000);
         };
         refreshUI();
-      })
 
+      })
     </script>
   </body>
 </html>
