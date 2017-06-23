@@ -1,28 +1,3 @@
-<!--
-You'll mostly be working in the javascript block of index.html. Note: The generated tweets will be displayed in reverse chronological order.
-
-BARE MINIMUM REQS:
-
-Show the user new tweets somehow.
-(You can show them automatically as they're created, or create a button that displays new tweets.)
-
-Display the timestamps of when the tweets were created.
-This timestamp should reflect the actual time the tweets were created, and should not just be hardcoded.
-
-Design your interface so that you want to look at and use the product you're making.
-
-Allow the user to click on a username to see that user's timeline.
-
-ADVANCED:
-
-Show when the tweets were created in a human-friendly way (eg "10 minutes ago").
-You'll want to find and use a library for this.
-
-Allow the user to tweet.
-(This is going to require you to understand a little more about data_generator.js,
-but you shouldn't need to modify anything.)
--->
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -37,63 +12,52 @@ but you shouldn't need to modify anything.)
       <h1> Twittler </h1>
       <img src="http://www.binkd.com/wp-content/uploads/2013/04/Twitter-engagement-Image.jpg" height="100" width="100"/>
     </div>
-      <p id='nmbrTweet'>0 tweets received</p>
+      <h3 id='nmbrTweet'>0 tweets received</h3>
+      <h3 id='timeline'></h3>
       <div id='lastTweet'></div>
     <script>
 
 
       $(document).ready(function(){
-
         var index = 0;
-        userNameClicked = false;
+        var selectedUser;
 
+        // instead of button, use recursion to refresh the tweets automatically
         var displayNewTweet = function() {
           $('#nmbrTweet').text(`${streams.home.length} tweets received`);
           var lastIndex = streams.home.length-1;
 
-        // instead of button, use while loop to refresh the tweets automatically
-
           while(index <= lastIndex) {
-            var tweet = streams.home[index];
-            var $tweet = $('<div class="tweet"></div>');
-            var tweetDate = tweet.created_at.toDateString() + ' ' + tweet.created_at.toLocaleTimeString();
-            var tweetUser = '<span class="userName link">' + tweet.user + '</span>';
+            if(!selectedUser || streams.home[index].user === selectedUser) {
+              var tweet = streams.home[index];
+              var $tweet = $('<div class="tweet"></div>');
+              var tweetDate = tweet.created_at.toDateString() + ' ' + tweet.created_at.toLocaleTimeString();
+              var tweetUser = '<span class="userName link">' + tweet.user + '</span>';
 
-            $tweet.append(tweetDate + ' ' + '<b>@' + tweetUser + '</b>: ' + tweet.message);
-            $tweet.prependTo('#lastTweet');
+              $tweet.append(tweetDate + ' ' + '<b>@' + tweetUser + '</b>: ' + tweet.message);
+              $tweet.prependTo('#lastTweet');
+            }
             index++;
           }
 
-            // Allow the user to click on a username to see that user's timeline.
+          // Allow the user to click on a username to see that user's timeline.
+          $('.userName').on('click', function() {
+            $('.tweet').remove();
+            $('#nmbrTweet').remove();
+            $('#timeline').text('Showing the timeline for @' + $(this).text());
+            selectedUser = $(this).text(); // same as $(event.target).text()
 
-            $('.userName').on('click', function() {
-              // userNameClicked = true;
-              //var $name = $(event.target).text();
-              var $user = $(this).text();
-              var i = 0;
-              while (i <= streams.users[$user].length) {
-                $('.tweet').remove();
-                streams.users[$user].forEach(function(tweet) {
-                  var $tweet = $('<div class="tweet"></div>');
-                  var tweetDate = tweet.created_at.toDateString() + ' ' + tweet.created_at.toLocaleTimeString();
-                  var tweetUser = '<span class="userName link">' + $user + '</span>';
-                  $tweet.append(tweetDate + ' ' + '<b>@' + tweetUser + '</b>: ' + tweet.message);
-                  $tweet.prependTo('#lastTweet');
-                  i++;
-                });
-              }
+            streams.users[selectedUser].forEach(function(tweet) {
+                var $tweet = $('<div class="tweet"></div>');
+                var tweetDate = tweet.created_at.toDateString() + ' ' + tweet.created_at.toLocaleTimeString();
+                var tweetUser = '<span class="userName link">' + tweet.user + '</span>';
+                $tweet.append(tweetDate + ' ' + '<b>@' + tweetUser + '</b>: ' + tweet.message);
+                $tweet.prependTo('#lastTweet');
             });
-
-        }; // displayNewTweet closing bracket
-
-       // setTimeout(displayNewTweet, 3000);
-
-        var refreshUI = function(){
-          displayNewTweet();
-          setTimeout(refreshUI, 3000);
+          });
+          setTimeout(displayNewTweet, 3000);
         };
-        refreshUI();
-
+        displayNewTweet();
       })
     </script>
   </body>
